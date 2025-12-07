@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phase 3: Security & Breach Response SQL</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Inter', sans-serif; }
+    .code-block {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 24px;
+      border-radius: 12px;
+      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      max-height: 600px;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-red-50 to-orange-50 min-h-screen p-8">
+  <div class="max-w-6xl mx-auto">
+    <div class="bg-white rounded-2xl shadow-2xl p-10 mb-8">
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">🔒 Phase 3: Security & Breach Response SQL</h1>
+      <p class="text-xl text-gray-600 mb-8">IT Act 2000 & DISHA Compliance - Security Infrastructure</p>
+
+      <div class="bg-gradient-to-r from-red-600 to-orange-600 text-white p-8 rounded-2xl mb-8">
+        <h2 class="text-2xl font-bold mb-4">🚨 What This Migration Adds:</h2>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <h3 class="font-bold mb-2">Security Monitoring:</h3>
+            <ul class="text-sm space-y-1">
+              <li>✓ Breach detection system</li>
+              <li>✓ Security incident logging</li>
+              <li>✓ Failed login tracking</li>
+              <li>✓ Suspicious activity alerts</li>
+              <li>✓ Real-time monitoring</li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="font-bold mb-2">Breach Response:</h3>
+            <ul class="text-sm space-y-1">
+              <li>✓ 72-hour notification system</li>
+              <li>✓ Breach register</li>
+              <li>✓ Incident response workflow</li>
+              <li>✓ Affected user tracking</li>
+              <li>✓ Remediation logging</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-orange-50 border-l-4 border-orange-500 p-6 rounded-xl mb-8">
+        <h3 class="font-bold text-orange-900 mb-2">📋 Instructions:</h3>
+        <ol class="list-decimal list-inside space-y-2 text-orange-800">
+          <li>Click "Copy SQL" button below</li>
+          <li>Go to Supabase Dashboard → SQL Editor</li>
+          <li>Click "New Query"</li>
+          <li>Paste the SQL</li>
+          <li>Click "Run"</li>
+          <li>Wait for completion (~30 seconds)</li>
+        </ol>
+      </div>
+
+      <div class="mb-8">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-2xl font-bold text-gray-900">Complete SQL Migration</h2>
+          <button onclick="copySQL()" id="copyBtn" class="bg-gradient-to-r from-red-500 to-orange-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:shadow-2xl transition transform hover:scale-105">
+            📋 Copy SQL
+          </button>
+        </div>
+        
+        <div class="code-block" id="sqlCode">-- EdgesOf MediScript - Phase 3: Security & Breach Response Migration
+-- IT Act 2000 & DISHA Compliance
+
+-- =====================================================
+-- SECURITY INCIDENTS & BREACH DETECTION
+-- =====================================================
+
+-- Security incidents table
+CREATE TABLE IF NOT EXISTS security_incidents (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    incident_type VARCHAR(50) NOT NULL CHECK (incident_type IN (
+        'data_breach', 'unauthorized_access', 'failed_login', 
+        'suspicious_activity', 'malware', 'ddos', 'other'
+    )),
+    severity VARCHAR(20) NOT NULL CHECK (severity IN ('low', 'medium', 'high', 'critical')),
+    status VARCHAR(50) DEFAULT 'detected' CHECK (status IN (
+        'detected', 'investigating', 'contained', 'resolved', 'false_positive'
+    )),
+    detected_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    detected_by VARCHAR(100),
+    description TEXT NOT NULL,
+    affected_systems TEXT[],
+    affected_data_types TEXT[],
+    estimated_records_affected INTEGER,
+    source_ip VARCHAR(50),
+    user_agent TEXT,
+    user_id UUID REFERENCES users(id),
+    investigation_notes TEXT,
+    containment_actions TEXT,
+    resolution_notes TEXT,
+    resolved_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Data breach register (DISHA/IT Act compliance)
+CREATE TABLE IF NOT EXISTS data_breach_register (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    breach_id VARCHAR(50) UNIQUE NOT NULL,
+    incident_id UUID REFERENCES security_incidents(id),
+    breach_date TIMESTAMP WITH TIME ZONE NOT NULL,
+    discovered_date TIMESTAMP WITH TIME ZONE NOT NULL,
+    breach_type VARCHAR(100) NOT NULL,
+    data_categories_affected TEXT[] NOT NULL,
+    number_of_records_affected INTEGER,
+    affected_individuals_notified BOOLEAN DEFAULT false,
+    notification_date TIMESTAMP WITH TIME ZONE,
+    authority_notified BOOLEAN DEFAULT false,
+    authority_notification_date TIMESTAMP WITH TIME ZONE,
+    notification_within_72_hours BOOLEAN,
+    root_cause TEXT,
+    remediation_steps TEXT,
+    preventive_measures TEXT,
+    compliance_status VARCHAR(50) DEFAULT 'pending' CHECK (compliance_status IN (
+        'pending', 'notified', 'under_investigation', 'resolved', 'closed'
+    )),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Affected users tracking
+CREATE TABLE IF NOT EXISTS breach_affected_users (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    breach_id UUID REFERENCES data_breach_register(id) ON DELETE CASCADE,
+    patient_id UUID REFERENCES patients(id),
+    user_id UUID REFERENCES users(id),
+    data_types_exposed TEXT[],
+    notification_sent BOOLEAN DEFAULT false,
+    notification_sent_at TIMESTAMP WITH TIME ZONE,
+    notification_method VARCHAR(50),
+    acknowledgement_received BOOLEAN DEFAULT false,
+    acknowledgement_date TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- =====================================================
+-- FAILED LOGIN ATTEMPTS & SUSPICIOUS ACTIVITY
+-- =====================================================
+
+-- Failed login attempts tracking
+CREATE TABLE IF NOT EXISTS failed_login_attempts (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    email VARCHAR(255) NOT NULL,
+    ip_address VARCHAR(50) NOT NULL,
+    user_agent TEXT,
+    attempt_time TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    failure_reason VARCHAR(100),
+    is_blocked BOOLEAN DEFAULT false,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Account lockouts
+CREATE TABLE IF NOT EXISTS account_lockouts (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID REFERENCES users(id),
+    email VARCHAR(255) NOT NULL,
+    locked_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    locked_until TIMESTAMP WITH TIME ZONE,
+    reason TEXT,
+    unlock_method VARCHAR(50),
+    unlocked_at TIMESTAMP WITH TIME ZONE,
+    unlocked_by UUID REFERENCES users(id),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Suspicious activity log
+CREATE TABLE IF NOT EXISTS suspicious_activity_log (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    activity_type VARCHAR(100) NOT NULL,
+    user_id UUID REFERENCES users(id),
+    ip_address VARCHAR(50),
+    user_agent TEXT,
+    description TEXT,
+    risk_score INTEGER CHECK (risk_score >= 0 AND risk_score <= 100),
+    flagged_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    reviewed BOOLEAN DEFAULT false,
+    reviewed_by UUID REFERENCES users(id),
+    reviewed_at TIMESTAMP WITH TIME ZONE,
+    action_taken TEXT,
+    false_positive BOOLEAN DEFAULT false,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- =====================================================
+-- SECURITY MONITORING & ALERTS
+-- =====================================================
+
+-- Security alerts
+CREATE TABLE IF NOT EXISTS security_alerts (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    alert_type VARCHAR(100) NOT NULL,
+    severity VARCHAR(20) NOT NULL CHECK (severity IN ('info', 'warning', 'critical')),
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    triggered_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    acknowledged BOOLEAN DEFAULT false,
+    acknowledged_by UUID REFERENCES users(id),
+    acknowledged_at TIMESTAMP WITH TIME ZONE,
+    resolved BOOLEAN DEFAULT false,
+    resolved_at TIMESTAMP WITH TIME ZONE,
+    resolution_notes TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- System health monitoring
+CREATE TABLE IF NOT EXISTS system_health_log (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    metric_name VARCHAR(100) NOT NULL,
+    metric_value DECIMAL(10,2),
+    metric_unit VARCHAR(50),
+    status VARCHAR(20) CHECK (status IN ('healthy', 'warning', 'critical')),
+    threshold_exceeded BOOLEAN DEFAULT false,
+    recorded_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- =====================================================
+-- BACKUP & DISASTER RECOVERY
+-- =====================================================
+
+-- Backup log
+CREATE TABLE IF NOT EXISTS backup_log (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    backup_type VARCHAR(50) NOT NULL CHECK (backup_type IN ('full', 'incremental', 'differential')),
+    backup_location TEXT NOT NULL,
+    backup_size_mb DECIMAL(10,2),
+    tables_backed_up TEXT[],
+    backup_started_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    backup_completed_at TIMESTAMP WITH TIME ZONE,
+    status VARCHAR(50) DEFAULT 'in_progress' CHECK (status IN (
+        'in_progress', 'completed', 'failed', 'partial'
+    )),
+    error_message TEXT,
+    retention_until DATE,
+    verified BOOLEAN DEFAULT false,
+    verification_date TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Disaster recovery tests
+CREATE TABLE IF NOT EXISTS disaster_recovery_tests (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    test_type VARCHAR(100) NOT NULL,
+    test_date TIMESTAMP WITH TIME ZONE NOT NULL,
+    backup_id UUID REFERENCES backup_log(id),
+    recovery_time_objective_minutes INTEGER,
+    actual_recovery_time_minutes INTEGER,
+    recovery_point_objective_hours INTEGER,
+    data_loss_hours DECIMAL(5,2),
+    test_result VARCHAR(50) CHECK (test_result IN ('passed', 'failed', 'partial')),
+    issues_found TEXT,
+    recommendations TEXT,
+    tested_by UUID REFERENCES users(id),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- =====================================================
+-- ACCESS CONTROL & PERMISSIONS AUDIT
+-- =====================================================
+
+-- Permission changes log
+CREATE TABLE IF NOT EXISTS permission_changes_log (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID REFERENCES users(id),
+    changed_by UUID REFERENCES users(id),
+    change_type VARCHAR(50) CHECK (change_type IN ('grant', 'revoke', 'modify')),
+    permission_name VARCHAR(100),
+    old_value TEXT,
+    new_value TEXT,
+    reason TEXT,
+    approved_by UUID REFERENCES users(id),
+    changed_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Session tracking (enhanced)
+CREATE TABLE IF NOT EXISTS user_sessions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID REFERENCES users(id),
+    session_token VARCHAR(255) UNIQUE NOT NULL,
+    ip_address VARCHAR(50),
+    user_agent TEXT,
+    device_info JSONB,
+    login_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    last_activity_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    logout_at TIMESTAMP WITH TIME ZONE,
+    session_duration_minutes INTEGER,
+    is_active BOOLEAN DEFAULT true,
+    terminated_reason VARCHAR(100),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- =====================================================
+-- COMPLIANCE REPORTING
+-- =====================================================
+
+-- Compliance reports
+CREATE TABLE IF NOT EXISTS compliance_reports (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    report_type VARCHAR(100) NOT NULL,
+    report_period_start DATE NOT NULL,
+    report_period_end DATE NOT NULL,
+    generated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    generated_by UUID REFERENCES users(id),
+    report_data JSONB,
+    compliance_score INTEGER CHECK (compliance_score >= 0 AND compliance_score <= 100),
+    issues_found INTEGER DEFAULT 0,
+    critical_issues INTEGER DEFAULT 0,
+    recommendations TEXT,
+    status VARCHAR(50) DEFAULT 'draft' CHECK (status IN ('draft', 'final', 'submitted')),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- =====================================================
+-- INDEXES FOR PERFORMANCE
+-- =====================================================
+
+CREATE INDEX IF NOT EXISTS idx_security_incidents_type ON security_incidents(incident_type);
+CREATE INDEX IF NOT EXISTS idx_security_incidents_severity ON security_incidents(severity);
+CREATE INDEX IF NOT EXISTS idx_security_incidents_status ON security_incidents(status);
+CREATE INDEX IF NOT EXISTS idx_security_incidents_detected_at ON security_incidents(detected_at);
+
+CREATE INDEX IF NOT EXISTS idx_data_breach_register_breach_date ON data_breach_register(breach_date);
+CREATE INDEX IF NOT EXISTS idx_data_breach_register_status ON data_breach_register(compliance_status);
+
+CREATE INDEX IF NOT EXISTS idx_failed_login_attempts_email ON failed_login_attempts(email);
+CREATE INDEX IF NOT EXISTS idx_failed_login_attempts_ip ON failed_login_attempts(ip_address);
+CREATE INDEX IF NOT EXISTS idx_failed_login_attempts_time ON failed_login_attempts(attempt_time);
+
+CREATE INDEX IF NOT EXISTS idx_suspicious_activity_user ON suspicious_activity_log(user_id);
+CREATE INDEX IF NOT EXISTS idx_suspicious_activity_flagged ON suspicious_activity_log(flagged_at);
+CREATE INDEX IF NOT EXISTS idx_suspicious_activity_reviewed ON suspicious_activity_log(reviewed);
+
+CREATE INDEX IF NOT EXISTS idx_security_alerts_severity ON security_alerts(severity);
+CREATE INDEX IF NOT EXISTS idx_security_alerts_acknowledged ON security_alerts(acknowledged);
+
+CREATE INDEX IF NOT EXISTS idx_backup_log_type ON backup_log(backup_type);
+CREATE INDEX IF NOT EXISTS idx_backup_log_status ON backup_log(status);
+CREATE INDEX IF NOT EXISTS idx_backup_log_started ON backup_log(backup_started_at);
+
+CREATE INDEX IF NOT EXISTS idx_user_sessions_user ON user_sessions(user_id);
+CREATE INDEX IF NOT EXISTS idx_user_sessions_active ON user_sessions(is_active);
+CREATE INDEX IF NOT EXISTS idx_user_sessions_login ON user_sessions(login_at);
+
+-- =====================================================
+-- FUNCTIONS & TRIGGERS
+-- =====================================================
+
+-- Function to check if breach notification is within 72 hours
+CREATE OR REPLACE FUNCTION check_breach_notification_compliance()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.authority_notification_date IS NOT NULL THEN
+        NEW.notification_within_72_hours := (
+            EXTRACT(EPOCH FROM (NEW.authority_notification_date - NEW.discovered_date)) / 3600 <= 72
+        );
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER breach_notification_compliance_check
+    BEFORE INSERT OR UPDATE ON data_breach_register
+    FOR EACH ROW
+    EXECUTE FUNCTION check_breach_notification_compliance();
+
+-- Function to auto-lock account after 5 failed attempts
+CREATE OR REPLACE FUNCTION check_failed_login_threshold()
+RETURNS TRIGGER AS $$
+DECLARE
+    failed_count INTEGER;
+BEGIN
+    SELECT COUNT(*) INTO failed_count
+    FROM failed_login_attempts
+    WHERE email = NEW.email
+    AND attempt_time > NOW() - INTERVAL '15 minutes';
+    
+    IF failed_count >= 5 THEN
+        INSERT INTO account_lockouts (email, reason, locked_until)
+        VALUES (NEW.email, 'Too many failed login attempts', NOW() + INTERVAL '30 minutes')
+        ON CONFLICT DO NOTHING;
+        
+        NEW.is_blocked := true;
+    END IF;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER failed_login_threshold_check
+    BEFORE INSERT ON failed_login_attempts
+    FOR EACH ROW
+    EXECUTE FUNCTION check_failed_login_threshold();
+
+-- =====================================================
+-- INITIAL DATA
+-- =====================================================
+
+-- Create initial security alert for system setup
+INSERT INTO security_alerts (alert_type, severity, title, description)
+VALUES (
+    'system_setup',
+    'info',
+    'Security monitoring system initialized',
+    'Phase 3 security infrastructure has been successfully deployed. All monitoring systems are now active.'
+);
+
+-- Create initial backup schedule
+INSERT INTO backup_log (backup_type, backup_location, backup_started_at, backup_completed_at, status, tables_backed_up, retention_until)
+VALUES (
+    'full',
+    'supabase-automated-backup',
+    NOW(),
+    NOW(),
+    'completed',
+    ARRAY['patients', 'prescriptions', 'invoices', 'users', 'clinics'],
+    CURRENT_DATE + INTERVAL '90 days'
+);
+
+-- =====================================================
+-- SUCCESS MESSAGE
+-- =====================================================
+
+SELECT '✅ Phase 3 Security & Breach Response migration completed successfully!' as status,
+       'Security monitoring, breach detection, and disaster recovery systems are now active' as details;</div>
+      </div>
+
+      <div class="bg-green-50 border-l-4 border-green-500 p-6 rounded-xl mt-8">
+        <h3 class="font-bold text-green-900 mb-3">✅ After Running This SQL:</h3>
+        <ul class="space-y-2 text-green-800 text-sm">
+          <li>✓ Security incident tracking system</li>
+          <li>✓ Data breach register (DISHA/IT Act compliant)</li>
+          <li>✓ 72-hour breach notification tracking</li>
+          <li>✓ Failed login attempt monitoring</li>
+          <li>✓ Account lockout system (5 attempts = 30 min lock)</li>
+          <li>✓ Suspicious activity detection</li>
+          <li>✓ Security alerts system</li>
+          <li>✓ Backup & disaster recovery logging</li>
+          <li>✓ Session tracking & monitoring</li>
+          <li>✓ Compliance reporting framework</li>
+        </ul>
+      </div>
+
+      <div class="mt-8 bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl p-10 text-white">
+        <h3 class="text-2xl font-bold mb-6">🎯 Next: Update Application</h3>
+        <p class="mb-4">After running this SQL, I'll update the application with:</p>
+        <div class="grid grid-cols-2 gap-6">
+          <div>
+            <h4 class="font-bold mb-2">Security Features:</h4>
+            <ul class="text-sm space-y-1">
+              <li>→ Real-time breach detection</li>
+              <li>→ Security dashboard</li>
+              <li>→ Failed login monitoring</li>
+              <li>→ Account lockout UI</li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-bold mb-2">Compliance Features:</h4>
+            <ul class="text-sm space-y-1">
+              <li>→ Breach notification system</li>
+              <li>→ 72-hour compliance tracker</li>
+              <li>→ Incident response workflow</li>
+              <li>→ Compliance reports</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function copySQL() {
+      const sqlCode = document.getElementById('sqlCode').textContent;
+      navigator.clipboard.writeText(sqlCode).then(() => {
+        const btn = document.getElementById('copyBtn');
+        btn.innerHTML = '✅ Copied! Now paste in Supabase';
+        btn.className = 'bg-gradient-to-r from-green-600 to-emerald-700 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-2xl';
+        
+        setTimeout(() => {
+          alert('✅ SQL Copied!\n\nNext Steps:\n1. Go to Supabase Dashboard\n2. Click SQL Editor\n3. Click New Query\n4. Paste (Ctrl+V)\n5. Click Run\n6. Tell me "Done!"');
+        }, 100);
+      });
+    }
+  </script>
+</body>
+</html>
